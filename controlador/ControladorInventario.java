@@ -17,6 +17,9 @@
 //equipo: id,nom,tipo (id pk)
 //
 //mantenimiento: idM,descripcion,tec,fec, (idE fk)
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
 
 public class ControladorInventario {
 
