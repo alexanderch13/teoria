@@ -1,3 +1,5 @@
+import java.io.Serializable;
+
 public class ParAsociativo<T,U> implements Serializable
 {
   private static final long serialVersionUID = 1L;
@@ -14,6 +16,7 @@ public class ParAsociativo<T,U> implements Serializable
   {
     return primero;
   }
+  
   public U getSegundo()
   {
     return segundo;
