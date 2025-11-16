@@ -17,3 +17,49 @@
 //equipo: id,nom,tipo (id pk)
 //
 //mantenimiento: idM,descripcion,tec,fec, (idE fk)
+
+public class ControladorInventario {
+
+    private RepositorioArchivo repositorio;
+    private RepositorioBD repositorioBD;
+
+    public ControladorInventario(String archivo) {
+        this.repositorio = new RepositorioArchivo(archivo);
+        this.repositorioBD = new RepositorioBD();
+    }
+
+    public void registrarAsociacion(Equipo e, Mantenimiento m) {
+        repositorio.agregar(e, m);
+    }
+
+    public List<ParAsociado<Equipo, Mantenimiento>> listarAsociaciones() {
+        return repositorio.listar();
+    }
+
+    public boolean guardarArchivo() {
+        try {
+            repositorio.guardarEnArchivo();
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    public boolean cargarArchivo() {
+        try {
+            repositorio.cargarDesdeArchivo();
+            return true;
+        } catch (IOException | ClassNotFoundException e) {
+            return false;
+        }
+    }
+
+    // -------- Operaciones sobre base de datos --------
+    public boolean guardarEnBD() {
+        try {
+            return repositorioBD.guardarAsociacionesEnBD(listarAsociaciones());
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+}
