@@ -54,7 +54,6 @@ public class ControladorInventario {
         }
     }
 
-    // -------- Operaciones sobre base de datos --------
     public boolean guardarEnBD() {
         try {
             return repositorioBD.guardarAsociacionesEnBD(listarAsociaciones());
