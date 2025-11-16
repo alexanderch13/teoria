@@ -1,3 +1,10 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
 public class RepositorioBD {
 
     private static final String URL = "jdbc:sqlite:/Users/karim/Downloads/BD/prueba.db";
@@ -22,12 +29,9 @@ public class RepositorioBD {
                     boolean existe = rs.getInt(1) > 0;
 
                     if (!existe) {
-
-                        String insertEquipo = "INSERT INTO Equipos (id, nombre, tipo) "
-                                + "VALUES (?, ?, ?)";
+                        String insertEquipo = "INSERT INTO equipos (id, nombre, tipo) VALUES (?, ?, ?)";
 
                         try (PreparedStatement psInsert = con.prepareStatement(insertEquipo)) {
-
                             psInsert.setInt(1, e.getId());
                             psInsert.setString(2, e.getNombre());
                             psInsert.setString(3, e.getTipo());
@@ -38,12 +42,11 @@ public class RepositorioBD {
                 }
 
                 String insertMantenimiento = """
-                    INSERT INTO mantenimientos (equipo_id, descripcion, tecnico, fecha, costo)
-                    VALUES (?, ?, ?, ?, ?)
-                """;
+                        INSERT INTO mantenimientos (equipo_id, descripcion, tecnico, fecha, costo)
+                        VALUES (?, ?, ?, ?, ?)
+                        """;
 
                 try (PreparedStatement psM = con.prepareStatement(insertMantenimiento)) {
-
                     psM.setInt(1, e.getId());
                     psM.setString(2, m.getDescripcion());
                     psM.setString(3, m.getTecnico());
