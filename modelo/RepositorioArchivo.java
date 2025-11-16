@@ -1,3 +1,7 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class RepositorioArchivo extends RepositorioAsociativo<Equipo, Mantenimiento>
 {
   private final String nombreArchivo;
@@ -14,7 +18,7 @@ public class RepositorioArchivo extends RepositorioAsociativo<Equipo, Mantenimie
       for (ParAsociativo<Equipo, Mantenimiento> par : asociaciones)
       {
         Equipo e = par.getPrimero();
-        Mantenimiento = par.getSegundo();
+        Mantenimiento m = par.getSegundo();
         
         String linea = String.join (",",
           String.valueOf(e.getId()),
