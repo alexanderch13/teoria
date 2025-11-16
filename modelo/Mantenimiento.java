@@ -39,4 +39,9 @@ public class Mantenimiento {
     public void setTecnico(String tecnico) {
         this.tecnico = tecnico;
     }
+    @Override
+    public String toString() {
+        return String.format("%d - %s | Técnico: %s | Fecha: %s | Costo: %.2f", id, descripcion, tecnico, fecha, costo);
+    }
 }
+
