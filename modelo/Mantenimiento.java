@@ -1,3 +1,5 @@
+package examen;
+
 import java.time.LocalDate;
 
 public class Mantenimiento {
@@ -44,4 +46,3 @@ public class Mantenimiento {
         return String.format("%d - %s | Técnico: %s | Fecha: %s | Costo: %.2f", id, descripcion, tecnico, fecha, costo);
     }
 }
-
