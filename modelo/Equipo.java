@@ -1,3 +1,5 @@
+package examen;
+
 public class Equipo
 {
   private int id;
@@ -27,6 +29,6 @@ public class Equipo
   @Override
   public String toString()
   {
-    return String.format("%d - %s (%s) ", id,nombre,tipo);
+	  return id + " - " + nombre + " (" + tipo + ")";
   }
 }
