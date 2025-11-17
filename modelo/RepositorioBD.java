@@ -1,4 +1,4 @@
-package examen;
+package modelo;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -8,7 +8,7 @@ import java.util.List;
 
 public class RepositorioBD {
 
-    private static final String URL = "jdbc:sqlite:/Users/karim/Downloads/BD/prueba.db";
+    private static final String URL = "jdbc:sqlite:/home/dyth/Documentos/Lenguaje/Teo/teoria/data.db";
 
     public boolean guardarAsociacionesEnBD(List<ParAsociativo<Equipo, Mantenimiento>> asociaciones)
             throws SQLException {

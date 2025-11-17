@@ -1,25 +1,22 @@
-package examen;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
+package vista;
+
+import controlador.ControladorInventario;
+import modelo.*;
+
+import java.awt.*;
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
+
 
 public class VistaInventario extends JFrame {
 
     private ControladorInventario controlador;
     private JTextArea areaTexto;
     
-    private static final String ARCHIVO_TEMP = "temp_asociaciones.txt";
+    private static final String ARCHIVO_TEMP = "/home/dyth/Documentos/Lenguaje/Teo/teoria/asociaciones.txt";
 
     
     public VistaInventario(ControladorInventario controlador) {
@@ -124,25 +121,19 @@ public class VistaInventario extends JFrame {
         }
     }
 
+    
     private void guardarArchivo() {
-        try {
-            // Crear un controlador temporal que use el archivo temp
-            ControladorInventario ctrlTemp = new ControladorInventario(ARCHIVO_TEMP);
-
-            // Guardar todos los pares actuales en ese archivo
-            for (ParAsociativo<Equipo, Mantenimiento> par : controlador.listarAsociaciones()) {
-                ctrlTemp.registrarAsociacion(par.getPrimero(), par.getSegundo());
-            }
-
-            if (ctrlTemp.guardarArchivo()) {
-                JOptionPane.showMessageDialog(this, "Archivo temporal guardado correctamente!");
-            } else {
-                JOptionPane.showMessageDialog(this, "Error al guardar el archivo temporal.");
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
-        }
+      try {
+          if (controlador.guardarArchivo()) {
+            JOptionPane.showMessageDialog(this, "Archivo guardado correctamente!");
+          } else {
+            JOptionPane.showMessageDialog(this, "Error al guardar el archivo.");
+          }
+      } catch (Exception e) {
+          JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+      }
     }
+
 
 
     private void cargarArchivo() {

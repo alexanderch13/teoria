@@ -17,8 +17,9 @@
 //equipo: id,nom,tipo (id pk)
 //
 //mantenimiento: idM,descripcion,tec,fec, (idE fk)
-package examen;
+package controlador;
 
+import modelo.*;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;

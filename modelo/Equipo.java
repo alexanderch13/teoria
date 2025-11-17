@@ -1,4 +1,4 @@
-package examen;
+package modelo;
 
 public class Equipo
 {
