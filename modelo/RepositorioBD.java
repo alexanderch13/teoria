@@ -1,3 +1,4 @@
+package examen;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -9,12 +10,12 @@ public class RepositorioBD {
 
     private static final String URL = "jdbc:sqlite:/Users/karim/Downloads/BD/prueba.db";
 
-    public boolean guardarAsociacionesEnBD(List<ParAsociado<Equipo, Mantenimiento>> asociaciones)
+    public boolean guardarAsociacionesEnBD(List<ParAsociativo<Equipo, Mantenimiento>> asociaciones)
             throws SQLException {
 
         try (Connection con = DriverManager.getConnection(URL)) {
 
-            for (ParAsociado<Equipo, Mantenimiento> par : asociaciones) {
+            for (ParAsociativo<Equipo, Mantenimiento> par : asociaciones) {
 
                 Equipo e = par.getPrimero();
                 Mantenimiento m = par.getSegundo();
