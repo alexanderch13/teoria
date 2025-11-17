@@ -1,3 +1,5 @@
+package examen;
+
 import java.io.Serializable;
 
 public class ParAsociativo<T,U> implements Serializable
