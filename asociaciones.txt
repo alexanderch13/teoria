@@ -1,4 +1,0 @@
-1,Impresora,Laser,101,Limpieza general,Juan Perez,2025-11-01,25.5
-2,Computadora,Portatil,102,Reemplazo de disco,Luisa Gomez,2025-11-05,75.0
-3,Proyector,Multimedia,103,Limpieza de lente,Carlos Ruiz,2025-11-10,15.0
-15,a,3,4,LImpieza,Saul garcia,2025-11-05,160.0
