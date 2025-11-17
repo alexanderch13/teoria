@@ -17,6 +17,8 @@
 //equipo: id,nom,tipo (id pk)
 //
 //mantenimiento: idM,descripcion,tec,fec, (idE fk)
+package examen;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
@@ -35,7 +37,7 @@ public class ControladorInventario {
         repositorio.agregar(e, m);
     }
 
-    public List<ParAsociado<Equipo, Mantenimiento>> listarAsociaciones() {
+    public List<ParAsociativo<Equipo, Mantenimiento>> listarAsociaciones() {
         return repositorio.listar();
     }
 
@@ -52,7 +54,7 @@ public class ControladorInventario {
         try {
             repositorio.cargarDesdeArchivo();
             return true;
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             return false;
         }
     }
