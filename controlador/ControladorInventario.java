@@ -1,70 +1,62 @@
-//hacer el examen, modelo, controlador, falta la vista gráfica. opciones: 
-//
-//registrar un par (equipo, mantenimiento) escribir el id, nom, tipo .. etc -> nuevo par en lista de asociaciones
-//
-//
-//ver todos los pares en lista de asociaciones 
-//
-//
-//guardar los pares de la lista de asociaciones en el archivo. informacion del archivo tambien
-//
-//
-//recuperar la informacion en el archivo a la lista de asociaciones
-//
-//
-//guardar la lista de asociaciones a mi base de datos y permitir salir de la aplicacion.
-//
-//equipo: id,nom,tipo (id pk)
-//
-//mantenimiento: idM,descripcion,tec,fec, (idE fk)
+
 package controlador;
 
 import modelo.*;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
+import java.sql.SQLException;
 
 public class ControladorInventario {
 
-    private RepositorioArchivo repositorio;
-    private RepositorioBD repositorioBD;
+    private RepositorioArchivo repoArchivo;
+    private RepositorioBD repoBD;
 
     public ControladorInventario(String archivo) {
-        this.repositorio = new RepositorioArchivo(archivo);
-        this.repositorioBD = new RepositorioBD();
+        this.repoArchivo = new RepositorioArchivo(archivo);
+        this.repoBD = new RepositorioBD();
+
     }
 
     public void registrarAsociacion(Equipo e, Mantenimiento m) {
-        repositorio.agregar(e, m);
+        ParAsociativo<Equipo, Mantenimiento> par = new ParAsociativo<>(e, m);
+        repoArchivo.registrarPar(par);
+    }
+
+    public void eliminarAsociacion(ParAsociativo<Equipo, Mantenimiento> par) {
+        repoArchivo.eliminarPar(par);
     }
 
     public List<ParAsociativo<Equipo, Mantenimiento>> listarAsociaciones() {
-        return repositorio.listar();
+        return repoArchivo.listar();
+    }
+
+    public void limpiarInventario() {
+        repoArchivo.limpiar();
     }
 
     public boolean guardarArchivo() {
         try {
-            repositorio.guardarEnArchivo();
+            repoArchivo.guardarEnArchivo();
             return true;
-        } catch (IOException e) {
-            return false;
-        }
-    }
-
-    public boolean cargarArchivo() {
-        try {
-            repositorio.cargarDesdeArchivo();
-            return true;
-        } catch (IOException e) {
+        } catch (Exception e) {
             return false;
         }
     }
 
     public boolean guardarEnBD() {
         try {
-            return repositorioBD.guardarAsociacionesEnBD(listarAsociaciones());
+            return repoBD.guardarAsociacionesEnBD(listarAsociaciones());
         } catch (SQLException e) {
+            e.printStackTrace();
             return false;
         }
     }
+
+    public RepositorioArchivo getRepositorioArchivo() { 
+	return repoArchivo; 
+    }
+    public RepositorioBD getRepositorioBD() {
+	return repoBD;
+
+    }
 }
+

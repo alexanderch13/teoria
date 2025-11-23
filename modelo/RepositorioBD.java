@@ -10,8 +10,7 @@ public class RepositorioBD {
 
     private static final String URL = "jdbc:sqlite:/home/dyth/Documentos/Lenguaje/Teo/teoria/data.db";
 
-    public boolean guardarAsociacionesEnBD(List<ParAsociativo<Equipo, Mantenimiento>> asociaciones)
-            throws SQLException {
+    public boolean guardarAsociacionesEnBD(List<ParAsociativo<Equipo, Mantenimiento>> asociaciones) throws SQLException {
 
         try (Connection con = DriverManager.getConnection(URL)) {
 

@@ -1,67 +1,64 @@
+
 package modelo;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+
+import java.io.*;
 import java.time.LocalDate;
+import java.util.*;
 
-public class RepositorioArchivo extends RepositorioAsociativo<Equipo, Mantenimiento> {
+public class RepositorioArchivo extends Repositorio {
 
-    private final String nombreArchivo;
+    private String rutaArchivo;
 
-    public RepositorioArchivo(String nombreArchivo) {
-        this.nombreArchivo = nombreArchivo;
+    public RepositorioArchivo(String ruta) {
+        this.rutaArchivo = ruta;
     }
 
-    public void guardarEnArchivo() throws IOException {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(nombreArchivo))) {
-            for (ParAsociativo<Equipo, Mantenimiento> par : asociaciones) {
-                Equipo e = par.getPrimero();
-                Mantenimiento m = par.getSegundo();
+    public void cargarDesdeArchivo() throws Exception {
+        List<ParAsociativo<Equipo, Mantenimiento>> temp = new ArrayList<>();
 
-                String linea = String.join(",",
-                        String.valueOf(e.getId()),
-                        e.getNombre(),
-                        e.getTipo(),
-                        String.valueOf(m.getId()),
-                        m.getDescripcion(),
-                        m.getTecnico(),
-                        String.valueOf(m.getFecha()),
-                        String.valueOf(m.getCosto())
-                );
-                bw.write(linea);
-                bw.newLine();
-            }
+        File f = new File(rutaArchivo);
+        if (!f.exists()) return;
+
+        BufferedReader br = new BufferedReader(new FileReader(f));
+        String linea;
+
+        while ((linea = br.readLine()) != null) {
+            String[] p = linea.split(";");
+            if (p.length != 8) continue;
+
+            Equipo e = new Equipo(
+                    Integer.parseInt(p[0]),
+                    p[1], p[2]);
+
+            Mantenimiento m = new Mantenimiento(
+                    Integer.parseInt(p[3]),
+                    p[4], p[5],
+                    LocalDate.parse(p[6]),
+                    Double.parseDouble(p[7])
+            );
+
+            temp.add(new ParAsociativo<>(e, m));
         }
+        br.close();
+
+        reemplazarTodo(temp);
     }
 
-    // Método que faltaba
-    public void cargarDesdeArchivo() throws IOException {
-        asociaciones.clear(); // Limpiamos la lista antes de cargar
-        try (BufferedReader br = new BufferedReader(new FileReader(nombreArchivo))) {
-            String linea;
-            while ((linea = br.readLine()) != null) {
-                String[] campos = linea.split(",");
+    public void guardarEnArchivo() throws Exception {
+        BufferedWriter bw = new BufferedWriter(new FileWriter(rutaArchivo));
 
-                if (campos.length == 8) { // Validamos la línea
-                    Equipo e = new Equipo(
-                            Integer.parseInt(campos[0]),
-                            campos[1],
-                            campos[2]
-                    );
+        for (ParAsociativo<Equipo, Mantenimiento> par : lista) {
+            Equipo e = par.getPrimero();
+            Mantenimiento m = par.getSegundo();
 
-                    Mantenimiento m = new Mantenimiento(
-                            Integer.parseInt(campos[3]),
-                            campos[4],
-                            campos[5],
-                            LocalDate.parse(campos[6]),
-                            Double.parseDouble(campos[7])
-                    );
-
-                    asociaciones.add(new ParAsociativo<>(e, m));
-                }
-            }
+            bw.write(e.getId() + ";" + e.getNombre() + ";" + e.getTipo() + ";"
+                    + m.getId() + ";" + m.getDescripcion() + ";" + m.getTecnico() + ";"
+                    + m.getFecha() + ";" + m.getCosto());
+            bw.newLine();
         }
+
+        bw.close();
+        notificarATodos("Archivo guardado");
     }
 }
+

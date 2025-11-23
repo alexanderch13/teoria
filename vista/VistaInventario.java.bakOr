@@ -1,0 +1,276 @@
+
+package vista;
+
+import controlador.ControladorInventario;
+import modelo.*;
+
+import java.awt.*;
+import java.time.LocalDate;
+import java.util.List;
+
+import javax.swing.*;
+
+public class VistaInventario extends JFrame {
+
+    private ControladorInventario controlador;
+
+    // Paneles y componentes principales
+    private JTextArea areaLista;     // muestra los pares (lista)
+    private JTextArea areaLog;       // consola de notificaciones / logs
+
+    // Campos del formulario a la derecha
+    private JTextField txtIdE;
+    private JTextField txtNombre;
+    private JTextField txtTipo;
+
+    private JTextField txtIdM;
+    private JTextField txtDesc;
+    private JTextField txtTec;
+    private JTextField txtFecha;
+    private JTextField txtCosto;
+
+    private JButton btnAgregar;      // botón dentro del formulario
+
+    // Estrategia (si la vas a usar)
+    private modelo.EstrategiaListado estrategia = null;
+
+    // Ruta por defecto temporal
+    private static final String ARCHIVO_TEMP = "/home/dyth/Documentos/Lenguaje/Teo/teoria/asociaciones.txt";
+
+    public VistaInventario(ControladorInventario controlador) {
+        this.controlador = controlador;
+        setTitle("Gestión de Inventario y Mantenimientos");
+        setSize(900, 600);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        initComponentes();
+
+        // Si integraste RepositorioListener en el modelo, aquí te registras:
+        // controlador.getRepositorio().agregarListener( (String msg) -> appendLog(msg) );
+    }
+
+    private void initComponentes() {
+        // Layout principal: BorderLayout
+        Container cp = getContentPane();
+        cp.setLayout(new BorderLayout(8, 8));
+
+        // -------------------------
+        // LEFT: panel vertical con botones
+        // -------------------------
+        JPanel leftPanel = new JPanel();
+        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
+        leftPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JButton btnVer = new JButton("Refrescar Lista");
+        JButton btnGuardarArchivo = new JButton("Guardar Archivo");
+        JButton btnCargarArchivo = new JButton("Cargar Archivo");
+        JButton btnGuardarBD = new JButton("Guardar BD y Salir");
+        JButton btnLimpiar = new JButton("Limpiar Lista");
+
+        // Espaciado y tamaño uniforme
+        Dimension btnSize = new Dimension(160, 30);
+        for (JButton b : new JButton[]{btnVer, btnGuardarArchivo, btnCargarArchivo, btnGuardarBD, btnLimpiar}) {
+            b.setMaximumSize(btnSize);
+            b.setAlignmentX(Component.CENTER_ALIGNMENT);
+            leftPanel.add(b);
+            leftPanel.add(Box.createVerticalStrut(8));
+        }
+
+        // -------------------------
+        // RIGHT: formulario para registrar par (siempre visible)
+        // -------------------------
+        JPanel rightPanel = new JPanel();
+        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+        rightPanel.setBorder(BorderFactory.createTitledBorder("Registrar Par"));
+
+        // Equipo inputs
+        txtIdE = new JTextField();
+        txtNombre = new JTextField();
+        txtTipo = new JTextField();
+
+        rightPanel.add(new JLabel("Equipo - ID:"));
+        rightPanel.add(txtIdE);
+        rightPanel.add(new JLabel("Equipo - Nombre:"));
+        rightPanel.add(txtNombre);
+        rightPanel.add(new JLabel("Equipo - Tipo:"));
+        rightPanel.add(txtTipo);
+        rightPanel.add(Box.createVerticalStrut(10));
+
+        // Mantenimiento inputs
+        txtIdM = new JTextField();
+        txtDesc = new JTextField();
+        txtTec = new JTextField();
+        txtFecha = new JTextField();
+        txtCosto = new JTextField();
+
+        rightPanel.add(new JLabel("Mantenimiento - ID:"));
+        rightPanel.add(txtIdM);
+        rightPanel.add(new JLabel("Descripción:"));
+        rightPanel.add(txtDesc);
+        rightPanel.add(new JLabel("Técnico:"));
+        rightPanel.add(txtTec);
+        rightPanel.add(new JLabel("Fecha (YYYY-MM-DD):"));
+        rightPanel.add(txtFecha);
+        rightPanel.add(new JLabel("Costo:"));
+        rightPanel.add(txtCosto);
+        rightPanel.add(Box.createVerticalStrut(10));
+
+        btnAgregar = new JButton("Agregar Par");
+        btnAgregar.setAlignmentX(Component.CENTER_ALIGNMENT);
+        rightPanel.add(btnAgregar);
+
+        // -------------------------
+        // CENTER / BOTTOM: Split pane con lista (arriba) y log (abajo)
+        // -------------------------
+        areaLista = new JTextArea();
+        areaLista.setEditable(false);
+        JScrollPane scrollLista = new JScrollPane(areaLista);
+
+        areaLog = new JTextArea();
+        areaLog.setEditable(false);
+        areaLog.setForeground(new Color(30, 120, 30)); // verde suave para logs
+        JScrollPane scrollLog = new JScrollPane(areaLog);
+
+        JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollLista, scrollLog);
+        split.setResizeWeight(0.7); // 70% para la lista, 30% para el log
+
+        // -------------------------
+        // Agregar a la ventana
+        // -------------------------
+        cp.add(leftPanel, BorderLayout.WEST);
+        cp.add(rightPanel, BorderLayout.EAST);
+        cp.add(split, BorderLayout.CENTER);
+
+        // -------------------------
+        // Listeners: botones de la izquierda
+        // -------------------------
+        btnVer.addActionListener(e -> {
+            mostrarPares();
+            appendLog("[i] Lista actualizada.");
+        });
+
+        btnGuardarArchivo.addActionListener(e -> {
+            boolean ok = controlador.guardarArchivo();
+            if (ok) appendLog("[+] Archivo guardado correctamente.");
+            else appendLog("[-] Error al guardar el archivo.");
+        });
+
+        btnCargarArchivo.addActionListener(e -> {
+            // Abrir JFileChooser para seleccionar archivo y recargar controlador
+            JFileChooser chooser = new JFileChooser();
+            chooser.setDialogTitle("Seleccionar archivo TXT");
+            chooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Archivos de texto", "txt"));
+            int r = chooser.showOpenDialog(this);
+            if (r == JFileChooser.APPROVE_OPTION) {
+                java.io.File f = chooser.getSelectedFile();
+                controlador = new ControladorInventario(f.getAbsolutePath());
+                mostrarPares();
+                appendLog("[+] Inventario cargado desde: " + f.getName());
+            } else {
+                appendLog("[i] Carga cancelada.");
+            }
+        });
+
+        btnGuardarBD.addActionListener(e -> {
+            boolean ok = controlador.guardarEnBD();
+            if (ok) {
+                appendLog("[+] Datos guardados en BD. Saliendo...");
+                System.exit(0);
+            } else {
+                appendLog("[-] Error al guardar en BD.");
+            }
+        });
+
+        btnLimpiar.addActionListener(e -> {
+            // Si tu repositorio tiene método limpiar, llámalo vía controlador (añade controlador.limpiarInventario())
+            try {
+                controlador.limpiarInventario(); // añade este método si no existe
+                mostrarPares();
+                appendLog("[+] Inventario limpiado.");
+            } catch (Exception ex) {
+                appendLog("[-] Error al limpiar inventario: " + ex.getMessage());
+            }
+        });
+
+        // -------------------------
+        // Listener: botón Agregar del formulario (derecha)
+        // -------------------------
+        btnAgregar.addActionListener(e -> {
+            try {
+                // Leer campos del formulario
+                Equipo equipo = new Equipo(
+                    Integer.parseInt(txtIdE.getText().trim()),
+                    txtNombre.getText().trim(),
+                    txtTipo.getText().trim()
+                );
+
+                Mantenimiento man = new Mantenimiento(
+                    Integer.parseInt(txtIdM.getText().trim()),
+                    txtDesc.getText().trim(),
+                    txtTec.getText().trim(),
+                    LocalDate.parse(txtFecha.getText().trim()),
+                    Double.parseDouble(txtCosto.getText().trim())
+                );
+
+                controlador.registrarAsociacion(equipo, man);
+                appendLog("[+] Par registrado exitosamente: " + equipo.getNombre());
+
+                // Actualizar lista visible y limpiar formulario
+                mostrarPares();
+                limpiarFormulario();
+
+            } catch (Exception ex) {
+                appendLog("[-] Error al registrar par: " + ex.getMessage());
+                JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+            }
+        });
+
+        // Inicializar vista con datos actuales
+        mostrarPares();
+        appendLog("[i] Aplicación lista.");
+    }
+
+    // Muestra pares en areaLista (usa toString de ParAsociativo)
+    private void mostrarPares() {
+        List<ParAsociativo<Equipo, Mantenimiento>> lista = controlador.listarAsociaciones();
+        areaLista.setText("");
+        if (lista.isEmpty()) {
+            areaLista.setText("Sin registros.\n");
+            return;
+        }
+
+        // Si quieres aplicar estrategia de ordenamiento (opcional)
+        // if (estrategia != null) lista = estrategia.procesar(lista);
+
+        for (ParAsociativo<Equipo, Mantenimiento> par : lista) {
+            areaLista.append(par.toString() + "\n");
+        }
+    }
+
+    // Añade una línea al log con salto de línea
+    private void appendLog(String mensaje) {
+        areaLog.append(mensaje + "\n");
+        // Scroll automático hacia abajo
+        areaLog.setCaretPosition(areaLog.getDocument().getLength());
+    }
+
+    private void limpiarFormulario() {
+        txtIdE.setText("");
+        txtNombre.setText("");
+        txtTipo.setText("");
+        txtIdM.setText("");
+        txtDesc.setText("");
+        txtTec.setText("");
+        txtFecha.setText("YYYY-MM-DD");
+        txtCosto.setText("");
+    }
+
+    // Método main para ejecutar la aplicación
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            ControladorInventario ctrl = new ControladorInventario("asociaciones.txt");
+            new VistaInventario(ctrl).setVisible(true);
+        });
+    }
+}
