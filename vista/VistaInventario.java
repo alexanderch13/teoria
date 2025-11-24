@@ -51,7 +51,7 @@ private void initComponentes() {
     Container cp = getContentPane();
     cp.setLayout(new BorderLayout(8, 8));
 
-    // --------- LEFT: botones de acciones ----------
+    // LEFT: botones de acciones
     JPanel left = new JPanel();
     left.setLayout(new BoxLayout(left, BoxLayout.Y_AXIS));
     left.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -93,7 +93,7 @@ private void initComponentes() {
 
     cp.add(left, BorderLayout.WEST);
 
-    // --------- CENTER: lista + log ----------
+    //  CENTER: lista + log 
     areaLista = new JTextArea(); areaLista.setEditable(false); areaLista.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
     JScrollPane scrollLista = new JScrollPane(areaLista);
 
@@ -105,14 +105,14 @@ private void initComponentes() {
     split.setResizeWeight(0.7);
     cp.add(split, BorderLayout.CENTER);
 
-    // --------- RIGHT: panel dinámico ----------
+    //  RIGHT: panel dinámico 
     panelFormulario = new JPanel();
     panelFormulario.setLayout(new BoxLayout(panelFormulario, BoxLayout.Y_AXIS));
     panelFormulario.setBorder(BorderFactory.createTitledBorder("Formulario"));
     panelFormulario.setPreferredSize(new Dimension(320, 0));
     cp.add(panelFormulario, BorderLayout.EAST);
 
-    // ---------- listeners botones ----------
+    //  listeners botones 
     btnRegistrar.addActionListener(a -> mostrarFormularioRegistrar());
     btnEliminar.addActionListener(a -> mostrarFormularioEliminar());
 
@@ -131,7 +131,7 @@ private void initComponentes() {
     comboPresentacion.addActionListener(e -> actualizarPresentador());
 }
 
-// ---------- Formulario Registrar Par ----------
+//  Formulario Registrar Par 
 private void mostrarFormularioRegistrar() {
     panelFormulario.removeAll();
 
@@ -172,7 +172,7 @@ private void mostrarFormularioRegistrar() {
     panelFormulario.repaint();
 }
 
-// ---------- Formulario Eliminar Equipo ----------
+//  Formulario Eliminar Equipo 
 private void mostrarFormularioEliminar() {
     panelFormulario.removeAll();
 
